@@ -3,6 +3,7 @@
 Created on Sat Nov 25 20:01:53 2017
 
 @author: Carson Hanel
+@author: Max Loeffler
 """
 from Parser.py import Parser
 
