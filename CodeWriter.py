@@ -222,26 +222,109 @@ class CodeWriter():
             code += "@SP\n"
             code += "D = M\n"
             code += "M = M+1\n"
-            code += "@R5\n"
+            code += "@R13\n"
             code += "M = D\n"
 
             if segment.lower() == "constant":
                 code += "@" + index + "\n"
                 code += "D = A\n"
 
-            code += "@R5\n"
+            if segment.lower() == "local":
+                code += "@LCL\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "A = D + A\n"
+                code += "D = M\n"
+
+            if segment.lower() == "argument":
+                code += "@ARG\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "A = D + A\n"
+                code += "D = M\n"
+
+            if segment.lower() == "this":
+                code += "@THIS\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "A = D + A\n"
+                code += "D = M\n"
+
+            if segment.lower() == "that":
+                code += "@THAT\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "A = D + A\n"
+                code += "D = M\n"
+
+            if segment.lower() == "pointer":
+                code += "@" + str(3 + int(index)) + "\n"
+                code += "D = M\n"
+
+            if segment.lower() == "static":
+                code += "@STAT." + index + "\n"
+                code += "D = M\n"
+           
+            if segment.lower() == "temp":
+                code += "@" + str(5 + int(index)) + "\n"
+                code += "D = M\n"
+
+            code += "@R13\n"
             code += "A = M\n"
             code += "M = D\n"
         if command.lower() == "c_pop":
             code += "// pop sequence\n"
+            
+            if segment.lower() == "local":
+                code += "@LCL\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "D = D + A\n"
+
+            if segment.lower() == "argument":
+                code += "@ARG\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "D = D + A\n"
+
+            if segment.lower() == "this":
+                code += "@THIS\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "D = D + A\n"
+
+            if segment.lower() == "that":
+                code += "@THAT\n"
+                code += "D = M\n"
+                code += "@" + index + "\n"
+                code += "D = D + A\n"
+
+            if segment.lower() == "pointer":
+                code += "@" + str(3 + int(index)) + "\n"
+                code += "D = A\n"
+
+            if segment.lower() == "static":
+                code += "@STAT." + index + "\n"
+                code += "D = A\n"
+           
+            if segment.lower() == "temp":
+                code += "@" + str(5 + int(index)) + "\n"
+                code += "D = A\n"
+            
+            code += "@R13\n"
+            code += "M = D\n"
             code += "@SP\n"
             code += "M = M-1\n"
             code += "A = M\n"
             code += "D = M\n"
             code += "M = 0\n"
-
-            if segment.lower() == "":
-               code += "ERROR"
+            code += "@R13\n"
+            code += "A = M\n"
+            code += "M = D\n"
  
+        self.ostream.write(code)
+        return
+    def endLoop(self):
+        code = "(END)\n@END\n0;JMP\n"
         self.ostream.write(code)
         return
